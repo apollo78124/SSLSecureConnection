@@ -1,0 +1,4 @@
+/run/media/root/687E-3B7D/clion-2022.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/run/media/root/687E-3B7D/clion-2022.2.3/bin/ninja/linux/ninja -G Ninja -S /run/media/root/687E-3B7D/Assignment3/code/server_ssl -B /run/media/root/687E-3B7D/Assignment3/code/server_ssl/cmake-build-debug
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /run/media/root/687E-3B7D/Assignment3/code/server_ssl/cmake-build-debug

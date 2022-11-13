@@ -11,7 +11,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <resolv.h>
+#include <unistd.h>
+#include <malloc.h>
+#include "openssl/ssl.h"
+#include "openssl/err.h"
 
+/**
+ * sudo dnf install openssl-devel
+ *
+ */
 
 struct options
 {
@@ -29,6 +40,8 @@ struct options
 static void options_init(struct options *opts);
 static void parse_arguments(int argc, char *argv[], struct options *opts);
 static void options_process(struct options *opts);
+static SSL_CTX* InitServerCTX(SSL_CTX *ctx);
+void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile);
 static void cleanup(const struct options *opts);
 static void set_signal_handling(struct sigaction *sa);
 static void signal_handler(int sig);
@@ -45,10 +58,18 @@ static volatile sig_atomic_t running;   // NOLINT(cppcoreguidelines-avoid-non-co
 int main(int argc, char *argv[])
 {
     struct options opts;
-
+    SSL_CTX *ctx;
     options_init(&opts);
     parse_arguments(argc, argv, &opts);
     options_process(&opts);
+
+    /**
+     * SSL Init
+     */
+    SSL_library_init();
+    ctx = InitServerCTX(&ctx);
+    LoadCertificates(ctx, "../../../cert.pem", "../../../key.pem");
+    printf("SSL initialized, certificate and key loaded\n");
 
     if(opts.ip_in)
     {
@@ -64,6 +85,7 @@ int main(int argc, char *argv[])
             socklen_t accept_addr_len;
             char *accept_addr_str;
             in_port_t accept_port;
+            SSL *ssl;
 
             accept_addr_len = sizeof(accept_addr);
             fd = accept(opts.fd_in, (struct sockaddr *)&accept_addr, &accept_addr_len);
@@ -81,8 +103,14 @@ int main(int argc, char *argv[])
             accept_addr_str = inet_ntoa(accept_addr.sin_addr);  // NOLINT(concurrency-mt-unsafe)
             accept_port = ntohs(accept_addr.sin_port);
             printf("Accepted from %s:%d\n", accept_addr_str, accept_port);
+
+
+            ssl = SSL_new(ctx);
+            SSL_set_fd(ssl, fd);      /* set connection socket to SSL state */
+
             //copy(fd, opts.fd_out, opts.buffer_size);
             printf("Closing %s:%d\n", accept_addr_str, accept_port);
+            SSL_free(ssl);
             close(fd);
         }
     }
@@ -172,7 +200,6 @@ static void options_process(struct options *opts)
         struct sockaddr_in addr;
         int result;
         int option;
-
         opts->fd_in = socket(AF_INET, SOCK_STREAM, 0);
 
         if(opts->fd_in == -1)
@@ -205,6 +232,43 @@ static void options_process(struct options *opts)
         {
             fatal_errno(__FILE__, __func__ , __LINE__, errno, 2);
         }
+    }
+}
+
+static SSL_CTX* InitServerCTX(SSL_CTX *ctx)
+{   SSL_METHOD *method;
+
+    OpenSSL_add_all_algorithms();  /* load & register all cryptos, etc. */
+    SSL_load_error_strings();   /* load all error messages */
+    method = TLSv1_2_server_method();  /* create new server-method instance */
+    ctx = SSL_CTX_new(method);   /* create new context from method */
+    if ( ctx == NULL )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    return ctx;
+}
+
+void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)
+{
+    /* set the local certificate from CertFile */
+    if ( SSL_CTX_use_certificate_file(ctx, CertFile, SSL_FILETYPE_PEM) <= 0 )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    /* set the private key from KeyFile (may be the same as CertFile) */
+    if ( SSL_CTX_use_PrivateKey_file(ctx, KeyFile, SSL_FILETYPE_PEM) <= 0 )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    /* verify private key */
+    if ( !SSL_CTX_check_private_key(ctx) )
+    {
+        fprintf(stderr, "Private key does not match the public certificate\n");
+        abort();
     }
 }
 

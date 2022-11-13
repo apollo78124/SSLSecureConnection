@@ -19,6 +19,9 @@ set(HEADER_LIST ${INCLUDE_DIR}/conversion.h
 
 add_compile_definitions(_POSIX_C_SOURCE=200809L)
 add_compile_definitions(_XOPEN_SOURCE=700)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lssl")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lcrypto")
 
 if(APPLE)
     add_definitions(-D_DARWIN_C_SOURCE)

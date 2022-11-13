@@ -4,14 +4,16 @@
 #include <arpa/inet.h>
 #include <assert.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <netinet/in.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <sys/socket.h>
+#include <malloc.h>
+#include "openssl/ssl.h"
+#include "openssl/err.h"
 
 struct options
 {
@@ -29,14 +31,13 @@ struct options
 static void options_init(struct options *opts);
 static void parse_arguments(int argc, char *argv[], struct options *opts);
 static void options_process(struct options *opts);
+SSL_CTX* InitCTX(void);
+void ShowCerts(SSL* ssl);
 static void cleanup(const struct options *opts);
-static void set_signal_handling(struct sigaction *sa);
-static void signal_handler(int sig);
 
 
 #define DEFAULT_BUF_SIZE 1024
 #define DEFAULT_PORT 5000
-#define BACKLOG 5
 
 
 static volatile sig_atomic_t running;   // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
@@ -45,13 +46,39 @@ static volatile sig_atomic_t running;   // NOLINT(cppcoreguidelines-avoid-non-co
 int main(int argc, char *argv[])
 {
     struct options opts;
-
+    SSL_CTX *ctx;
+    SSL *fd_out_ssl;
+    SSL *fd_in_ssl;
     options_init(&opts);
     parse_arguments(argc, argv, &opts);
     options_process(&opts);
 
-    //copy(opts.fd_in, opts.fd_out, opts.buffer_size);
+    /**
+     * SSL Init
+     */
+    SSL_library_init();
+    ctx = InitCTX();
+    printf("SSL initialized, certificate and key loaded\n");
 
+
+    fd_out_ssl = SSL_new(ctx);
+    SSL_set_fd(fd_out_ssl, opts.fd_out);
+    fd_in_ssl = SSL_new(ctx);
+    SSL_set_fd(fd_in_ssl, opts.fd_in);
+    if (SSL_connect(fd_out_ssl) == -1)   /* perform the connection */
+    {
+        ERR_print_errors_fp(stderr);
+
+    }
+    else {
+              /* get any certificates */
+        ShowCerts(fd_out_ssl);
+        copy(fd_in_ssl, fd_out_ssl, opts.buffer_size);
+    }
+
+    SSL_free(fd_out_ssl);
+    SSL_free(fd_in_ssl);
+    SSL_CTX_free(ctx);
     cleanup(&opts);
 
     return EXIT_SUCCESS;
@@ -163,6 +190,44 @@ static void options_process(struct options *opts)
 }
 
 
+SSL_CTX* InitCTX(void)
+{   SSL_METHOD *method;
+    SSL_CTX *ctx;
+
+    OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
+    SSL_load_error_strings();   /* Bring in and register error messages */
+    method = TLSv1_2_client_method();  /* Create new client-method instance */
+    ctx = SSL_CTX_new(method);   /* Create new context */
+    if ( ctx == NULL )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    return ctx;
+}
+
+void ShowCerts(SSL* ssl)
+{   X509 *cert;
+    char *line;
+
+    cert = SSL_get_peer_certificate(ssl); /* get the server's certificate */
+    if ( cert != NULL )
+    {
+        printf("Server certificates:\n");
+        line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+        printf("Subject: %s\n", line);
+        free(line);       /* free the malloc'ed string */
+        line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+        printf("Issuer: %s\n", line);
+        free(line);       /* free the malloc'ed string */
+        X509_free(cert);     /* free the malloc'ed certificate copy */
+    }
+    else
+    {
+        printf("Info: No client certificates configured.\n");
+    }
+}
+
 static void cleanup(const struct options *opts)
 {
     if(opts->file_name || opts->ip_in)
@@ -175,29 +240,4 @@ static void cleanup(const struct options *opts)
         close(opts->fd_out);
     }
 }
-
-
-static void set_signal_handling(struct sigaction *sa)
-{
-    int result;
-
-    sigemptyset(&sa->sa_mask);
-    sa->sa_flags = 0;
-    sa->sa_handler = signal_handler;
-    result = sigaction(SIGINT, sa, NULL);
-
-    if(result == -1)
-    {
-        fatal_errno(__FILE__, __func__ , __LINE__, errno, 2);
-    }
-}
-
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-static void signal_handler(int sig)
-{
-    running = 0;
-}
-#pragma GCC diagnostic pop
 

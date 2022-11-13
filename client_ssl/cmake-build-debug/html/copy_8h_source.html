@@ -75,13 +75,14 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;openssl/ssl.h&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="copy_8h.html#a08396fe6944251d2afc986f2f7eafefc">    8</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="copy_8h.html#a08396fe6944251d2afc986f2f7eafefc">copy</a>(<span class="keywordtype">int</span> from_fd, <span class="keywordtype">int</span> to_fd, <span class="keywordtype">size_t</span> count);</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="copy_8h.html#a1438651ec4d2d4f591a2d54c801d32d7">    9</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="copy_8h.html#a1438651ec4d2d4f591a2d54c801d32d7">copy</a>(SSL *from_fd, SSL *to_fd, <span class="keywordtype">size_t</span> count);</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//V1_COPY_H</span></div>
-<div class="ttc" id="acopy_8h_html_a08396fe6944251d2afc986f2f7eafefc"><div class="ttname"><a href="copy_8h.html#a08396fe6944251d2afc986f2f7eafefc">copy</a></div><div class="ttdeci">void copy(int from_fd, int to_fd, size_t count)</div></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//V1_COPY_H</span></div>
+<div class="ttc" id="acopy_8h_html_a1438651ec4d2d4f591a2d54c801d32d7"><div class="ttname"><a href="copy_8h.html#a1438651ec4d2d4f591a2d54c801d32d7">copy</a></div><div class="ttdeci">void copy(SSL *from_fd, SSL *to_fd, size_t count)</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -41,14 +41,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "doxygen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-doxygen-Debug-7c3a3f77a0b2fb66cd05.json",
+					"jsonFile" : "target-doxygen-Debug-1246900745a293a9a8e8.json",
 					"name" : "doxygen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "v5::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-v5-Debug-deeb0467763ca8f5d1c5.json",
+					"jsonFile" : "target-v5-Debug-5030857371e0d7da1400.json",
 					"name" : "v5",
 					"projectIndex" : 0
 				}
@@ -58,8 +58,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/run/media/root/687E-3B7D/Assignment3/code/client_ssl/cmake-build-debug",
-		"source" : "/run/media/root/687E-3B7D/Assignment3/code/client_ssl"
+		"build" : "/run/media/root/687E-3B7D/Assignment3/code/server_ssl/cmake-build-debug",
+		"source" : "/run/media/root/687E-3B7D/Assignment3/code/server_ssl"
 	},
 	"version" : 
 	{

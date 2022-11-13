@@ -3,9 +3,10 @@
 
 
 #include <stddef.h>
+#include <openssl/ssl.h>
 
 
-void copy(int from_fd, int to_fd, size_t count);
+void copy(SSL *from_fd, SSL *to_fd, size_t count);
 
 
 #endif //V1_COPY_H

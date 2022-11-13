@@ -6,32 +6,31 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <openssl/ssl.h>
 
 
-void copy(int from_fd, int to_fd, size_t count)
+void copy(SSL *from_fd, SSL *to_fd, size_t count)
 {
     char buffer[1024] = {0};
     ssize_t rbytes;
+    ssize_t wbytes;
     char echo1[256] = {0};
 
-    if(buffer == NULL)
+    while((rbytes = SSL_read(from_fd, buffer, count)) > 0)
     {
-        fatal_errno(__FILE__, __func__ , __LINE__, errno, 2);
-    }
 
-    while((rbytes = read(from_fd, buffer, count)) > 0)
-    {
-        ssize_t wbytes;
-        wbytes = write(to_fd, buffer, rbytes);
+        printf("Client says: %s\n", buffer);
+        wbytes = strlen(buffer);
         strcpy(echo1, buffer);
         for (int i = 0; echo1[i]!='\0'; i++) {
             if(echo1[i] >= 'a' && echo1[i] <= 'z') {
                 echo1[i] = echo1[i] -32;
             }
         }
-
-        wbytes = write(from_fd, echo1, strlen(echo1) + 1);
+        printf("Echoing : %s\n", echo1);
+        wbytes = SSL_write(from_fd, echo1, strlen(echo1) + 1);
         memset(buffer,0,strlen(buffer));
+        memset(echo1,0,strlen(echo1));
         if(wbytes == -1)
         {
             fatal_errno(__FILE__, __func__ , __LINE__, errno, 4);

@@ -73,13 +73,15 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;stddef.h&gt;</code><br />
+<code>#include &lt;openssl/ssl.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for copy.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="copy_8h__incl.png" border="0" usemap="#ainclude_2copy_8h" alt=""/></div>
 <map name="ainclude_2copy_8h" id="ainclude_2copy_8h">
-<area shape="rect" title=" " alt="" coords="5,5,120,32"/>
-<area shape="rect" title=" " alt="" coords="25,80,100,107"/>
+<area shape="rect" title=" " alt="" coords="43,5,157,32"/>
+<area shape="rect" title=" " alt="" coords="5,80,80,107"/>
+<area shape="rect" title=" " alt="" coords="104,80,211,107"/>
 </map>
 </div>
 </div>
@@ -87,12 +89,12 @@ Include dependency graph for copy.h:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a08396fe6944251d2afc986f2f7eafefc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="copy_8h.html#a08396fe6944251d2afc986f2f7eafefc">copy</a> (int from_fd, int to_fd, size_t count)</td></tr>
-<tr class="separator:a08396fe6944251d2afc986f2f7eafefc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1438651ec4d2d4f591a2d54c801d32d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="copy_8h.html#a1438651ec4d2d4f591a2d54c801d32d7">copy</a> (SSL *from_fd, SSL *to_fd, size_t count)</td></tr>
+<tr class="separator:a1438651ec4d2d4f591a2d54c801d32d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a08396fe6944251d2afc986f2f7eafefc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08396fe6944251d2afc986f2f7eafefc">&#9670;&nbsp;</a></span>copy()</h2>
+<a id="a1438651ec4d2d4f591a2d54c801d32d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1438651ec4d2d4f591a2d54c801d32d7">&#9670;&nbsp;</a></span>copy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -100,13 +102,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void copy </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">SSL *&#160;</td>
           <td class="paramname"><em>from_fd</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">SSL *&#160;</td>
           <td class="paramname"><em>to_fd</em>, </td>
         </tr>
         <tr>

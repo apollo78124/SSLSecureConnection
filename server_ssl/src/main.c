@@ -42,9 +42,11 @@ static void parse_arguments(int argc, char *argv[], struct options *opts);
 static void options_process(struct options *opts);
 static SSL_CTX* InitServerCTX(SSL_CTX *ctx);
 void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile);
+void ShowCerts(SSL* ssl);
 static void cleanup(const struct options *opts);
 static void set_signal_handling(struct sigaction *sa);
 static void signal_handler(int sig);
+void Servlet(SSL* fd_in_ssl, SSL* fd_to_ssl, struct options *opts);
 
 
 #define DEFAULT_BUF_SIZE 1024
@@ -85,7 +87,8 @@ int main(int argc, char *argv[])
             socklen_t accept_addr_len;
             char *accept_addr_str;
             in_port_t accept_port;
-            SSL *ssl;
+            SSL *fd_from_ssl;
+            SSL *fd_to_ssl;
 
             accept_addr_len = sizeof(accept_addr);
             fd = accept(opts.fd_in, (struct sockaddr *)&accept_addr, &accept_addr_len);
@@ -105,12 +108,25 @@ int main(int argc, char *argv[])
             printf("Accepted from %s:%d\n", accept_addr_str, accept_port);
 
 
-            ssl = SSL_new(ctx);
-            SSL_set_fd(ssl, fd);      /* set connection socket to SSL state */
+            fd_from_ssl = SSL_new(ctx);
+            fd_to_ssl = SSL_new(ctx);
+            SSL_set_fd(fd_from_ssl, fd);      /* set connection socket to SSL state */
+            SSL_set_fd(fd_to_ssl, opts.fd_out);
 
-            //copy(fd, opts.fd_out, opts.buffer_size);
+            if (SSL_accept(fd_from_ssl) == -1)     /* do SSL-protocol accept */
+            {
+                ERR_print_errors_fp(stderr);
+            }
+            else
+            {
+                printf("SSL connection established\n");
+                ShowCerts(fd_to_ssl);        /* get any certificates */
+                copy(fd_from_ssl, fd_to_ssl, opts.buffer_size);
+            }
+
             printf("Closing %s:%d\n", accept_addr_str, accept_port);
-            SSL_free(ssl);
+            SSL_free(fd_from_ssl);
+            SSL_CTX_free(ctx);
             close(fd);
         }
     }
@@ -270,6 +286,27 @@ void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)
         fprintf(stderr, "Private key does not match the public certificate\n");
         abort();
     }
+}
+
+
+void ShowCerts(SSL* ssl)
+{   X509 *cert;
+    char *line;
+
+    cert = SSL_get_peer_certificate(ssl); /* Get certificates (if available) */
+    if ( cert != NULL )
+    {
+        printf("Server certificates:\n");
+        line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+        printf("Subject: %s\n", line);
+        free(line);
+        line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+        printf("Issuer: %s\n", line);
+        free(line);
+        X509_free(cert);
+    }
+    else
+        printf("No certificates.\n");
 }
 
 

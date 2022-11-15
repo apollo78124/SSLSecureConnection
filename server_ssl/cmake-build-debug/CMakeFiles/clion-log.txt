@@ -1,4 +1,17 @@
-/run/media/root/687E-3B7D/clion-2022.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/run/media/root/687E-3B7D/clion-2022.2.3/bin/ninja/linux/ninja -G Ninja -S /run/media/root/687E-3B7D/Assignment3/code/server_ssl -B /run/media/root/687E-3B7D/Assignment3/code/server_ssl/cmake-build-debug
--- Configuring done
--- Generating done
--- Build files have been written to: /run/media/root/687E-3B7D/Assignment3/code/server_ssl/cmake-build-debug
+"C:\Program Files\JetBrains\CLion 2022.2.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion 2022.2.3/bin/ninja/win/ninja.exe" -G Ninja -S E:\Assignment3\code\server_ssl -B E:\Assignment3\code\server_ssl\cmake-build-debug
+-- The C compiler identification is GNU 11.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/JetBrains/CLion 2022.2.3/bin/mingw/bin/gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+CMake Error at C:/Program Files/JetBrains/CLion 2022.2.3/bin/cmake/win/share/cmake-3.23/Modules/FindPackageHandleStandardArgs.cmake:230 (message):
+  Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE dot)
+Call Stack (most recent call first):
+  C:/Program Files/JetBrains/CLion 2022.2.3/bin/cmake/win/share/cmake-3.23/Modules/FindPackageHandleStandardArgs.cmake:594 (_FPHSA_FAILURE_MESSAGE)
+  C:/Program Files/JetBrains/CLion 2022.2.3/bin/cmake/win/share/cmake-3.23/Modules/FindDoxygen.cmake:646 (find_package_handle_standard_args)
+  CMakeLists.txt:95 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+See also "E:/Assignment3/code/server_ssl/cmake-build-debug/CMakeFiles/CMakeOutput.log".

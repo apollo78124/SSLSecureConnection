@@ -34,6 +34,8 @@ struct options
     int fd_in;
     int fd_out;
     size_t buffer_size;
+    char *certPath;
+    char *keyPath;
 };
 
 
@@ -70,7 +72,8 @@ int main(int argc, char *argv[])
      */
     SSL_library_init();
     ctx = InitServerCTX(&ctx);
-    LoadCertificates(ctx, "../../../cert.pem", "../../../key.pem");
+    //LoadCertificates(ctx, "../../../cert.pem", "../../../key.pem");
+    LoadCertificates(ctx, opts.certPath, opts.keyPath);
     printf("SSL initialized, certificate and key loaded\n");
 
     if(opts.ip_in)
@@ -152,7 +155,7 @@ static void parse_arguments(int argc, char *argv[], struct options *opts)
 {
     int c;
 
-    while((c = getopt(argc, argv, ":i:o:p:P:b:")) != -1)   // NOLINT(concurrency-mt-unsafe)
+    while((c = getopt(argc, argv, ":i:o:p:P:c:k:b:")) != -1)   // NOLINT(concurrency-mt-unsafe)
     {
         switch(c)
         {
@@ -174,6 +177,16 @@ static void parse_arguments(int argc, char *argv[], struct options *opts)
             case 'P':
             {
                 opts->port_out = parse_port(optarg, 10); // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+                break;
+            }
+            case 'c':
+            {
+                opts->certPath = optarg;
+                break;
+            }
+            case 'k':
+            {
+                opts->keyPath = optarg;
                 break;
             }
             case 'b':
